@@ -16,13 +16,7 @@
             padding: 15px;
             margin: 0;
         }
-        .card {
-            width: 100%;
-            max-width: 380px;
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 20px;
-        }
+        .card { width: 100%; max-width: 380px; background: #1e1e1e; padding: 20px; border-radius: 20px; }
         .header-icon { text-align: center; margin-bottom: 10px; }
         .header-icon i { font-size: 50px; color: #ff9800; }
         .title { color: #4caf50; text-align: center; font-size: 0.9rem; margin-bottom: 20px; }
@@ -31,38 +25,23 @@
         .input-group { display: flex; flex-direction: column; position: relative; }
         label { font-size: 0.8rem; color: #888; margin-bottom: 5px; }
         input {
-            background: #2a2a2a;
-            border: 1px solid #ff9800;
-            border-radius: 8px;
-            color: white;
-            padding: 12px;
-            font-size: 1rem;
-            width: 100%;
-            outline: none;
+            background: #2a2a2a; border: 1px solid #ff9800; border-radius: 8px;
+            color: white; padding: 12px; font-size: 1rem; width: 100%; outline: none;
         }
         .risk-label-amount { position: absolute; right: 0; top: 0; font-size: 0.8rem; color: #888; }
 
-        /* Position Size Display */
         .result-area { text-align: center; margin: 20px 0; }
         .pos-size-num { font-size: 3rem; font-weight: bold; color: #e0e0e0; }
-        .pos-size-label { color: #4caf50; font-size: 0.9rem; }
+        .pos-size-label { color: #4caf50; font-size: 0.9rem; margin-bottom: 10px; }
 
-        .action-btns { display: flex; justify-content: center; gap: 30px; margin: 10px 0; }
-        .action-btns i { font-size: 1.5rem; color: #4caf50; cursor: pointer; }
+        .action-btns { display: flex; justify-content: center; gap: 40px; margin-top: 10px; }
+        .action-btns i { font-size: 1.8rem; color: #4caf50; cursor: pointer; transition: 0.2s; }
+        .action-btns i:active { color: #ff9800; transform: scale(0.9); }
 
-        /* Trade Amount & Leverage Swap Section */
         .swap-row { display: flex; align-items: flex-end; gap: 10px; margin-top: 10px; }
-        .swap-icon { color: #4caf50; padding-bottom: 12px; font-size: 1.2rem; cursor: pointer; }
+        .swap-icon { color: #4caf50; padding-bottom: 12px; font-size: 1.2rem; }
 
-        /* Profit/Risk Box */
-        .bottom-box {
-            background: #2a2a35;
-            border-radius: 15px;
-            margin-top: 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            overflow: hidden;
-        }
+        .bottom-box { background: #2a2a35; border-radius: 15px; margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
         .target-input-area { padding: 15px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #444; }
         .target-input { background: #3a3a45; border: 1px solid #888; border-radius: 8px; color: white; width: 100%; padding: 8px; text-align: center; }
         .stats-area { padding: 10px 15px; }
@@ -71,18 +50,8 @@
         .val-risk { color: #ff5252; }
         .val-rr { color: #ff9800; }
 
-        /* Footer Nav */
-        .nav-bar {
-            background: #ff6d00;
-            border-radius: 50px;
-            margin-top: 25px;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px;
-            align-items: center;
-        }
-        .nav-item { color: white; font-weight: bold; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
-        .nav-item.active { background: #004d40; padding: 5px 15px; border-radius: 20px; }
+        .nav-bar { background: #ff6d00; border-radius: 50px; margin-top: 25px; display: flex; justify-content: space-around; padding: 10px; align-items: center; }
+        .nav-item { color: white; font-weight: bold; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -92,107 +61,10 @@
     <div class="title">Crypto Position Size Calculator</div>
 
     <div class="grid">
+        <div class="input-group"><label>Capital</label><input type="number" id="capital" value="130" oninput="calculate()"></div>
         <div class="input-group">
-            <label>Capital</label>
-            <input type="number" id="capital" value="130" oninput="calculate()">
-        </div>
-        <div class="input-group">
-            <label>Risk %</label>
-            <span class="risk-label-amount" id="riskValueLabel">$130</span>
+            <label>Risk %</label><span class="risk-label-amount" id="riskValueLabel">$130</span>
             <input type="number" id="riskPercent" value="100" oninput="calculate()">
         </div>
-        <div class="input-group">
-            <label>Entry Price</label>
-            <input type="number" id="entry" value="95283" oninput="calculate()">
-        </div>
-        <div class="input-group">
-            <label>Stop Loss</label>
-            <input type="number" id="stoploss" value="94400" oninput="calculate()">
-        </div>
-    </div>
-
-    <div class="result-area">
-        <div class="pos-size-num" id="posSize">14028</div>
-        <div class="pos-size-label">Position Size</div>
-        <div class="action-btns">
-            <i class="fa-regular fa-copy" onclick="copyPos()"></i>
-            <i class="fa-solid fa-rotate-right" onclick="calculate()"></i>
-        </div>
-    </div>
-
-    <div class="swap-row">
-        <div class="input-group">
-            <label>Trade Amount</label>
-            <input type="number" id="tradeAmount" value="28.0" readonly>
-        </div>
-        <div class="swap-icon"><i class="fa-solid fa-right-left"></i></div>
-        <div class="input-group">
-            <label>Leverage</label>
-            <input type="number" id="leverage" value="45" oninput="calculate()">
-        </div>
-    </div>
-
-    <div class="bottom-box">
-        <div class="target-input-area">
-            <input type="number" class="target-input" id="target" value="106200" oninput="calculate()">
-        </div>
-        <div class="stats-area">
-            <div class="stat-line"><span>Profit:</span><span class="val-profit" id="profit">≈1607</span></div>
-            <div class="stat-line"><span>Risk:</span><span class="val-risk" id="riskAmt">130</span></div>
-            <div class="stat-line"><span>R:R</span><span class="val-rr" id="rr">1:12.36</span></div>
-        </div>
-    </div>
-
-    <div class="nav-bar">
-        <div class="nav-item active"><i class="fa-solid fa-bitcoin-sign"></i> Crypto</div>
-        <div class="nav-item">FX</div>
-        <div class="nav-item"><i class="fa-solid fa-gear"></i></div>
-    </div>
-</div>
-
-<script>
-function calculate() {
-    const cap = parseFloat(document.getElementById('capital').value) || 0;
-    const riskP = parseFloat(document.getElementById('riskPercent').value) || 0;
-    const ent = parseFloat(document.getElementById('entry').value) || 0;
-    const sl = parseFloat(document.getElementById('stoploss').value) || 0;
-    const lev = parseFloat(document.getElementById('leverage').value) || 1;
-    const target = parseFloat(document.getElementById('target').value) || 0;
-
-    const riskAmt = (cap * riskP) / 100;
-    document.getElementById('riskValueLabel').innerText = "$" + Math.round(riskAmt);
-
-    const diff = Math.abs(ent - sl);
-    if (diff > 0) {
-        // Position Size (USDT value)
-        const positionSize = (riskAmt / diff) * ent;
-        document.getElementById('posSize').innerText = Math.round(positionSize).toLocaleString();
-        
-        // Trade Amount (Margin)
-        const margin = positionSize / lev;
-        document.getElementById('tradeAmount').value = margin.toFixed(1);
-
-        // Profit & Risk stats
-        document.getElementById('riskAmt').innerText = Math.round(riskAmt);
-        
-        if (target > 0) {
-            const rewardDiff = Math.abs(target - ent);
-            const profit = (positionSize / ent) * rewardDiff;
-            const rrRatio = rewardDiff / diff;
-            
-            document.getElementById('profit').innerText = "≈" + Math.round(profit);
-            document.getElementById('rr').innerText = "1:" + rrRatio.toFixed(2);
-        }
-    }
-}
-
-function copyPos() {
-    const val = document.getElementById('posSize').innerText.replace(/,/g, '');
-    navigator.clipboard.writeText(val).then(() => alert("Copied!"));
-}
-
-calculate();
-</script>
-
-</body>
-</html>
+        <div class="input-group"><label>Entry Price</label><input type="number" id="entry" value="95283" oninput="calculate()"></div>
+        <div class="
