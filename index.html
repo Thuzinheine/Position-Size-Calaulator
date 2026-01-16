@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pro Sizer Final Fix</title>
+    <title>Pro Sizer - Layout Final Fix</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -24,17 +24,45 @@
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .risk-top-label { position: absolute; right: 5px; top: 0; font-size: 0.7rem; color: #FF0000; font-weight: 900; }
 
-        .res-section { text-align: center; margin: 15px 0; padding: 20px; background: rgba(255, 255, 255, 0.02); border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.03); position: relative; }
-        .trade-type-badge { position: absolute; top: 10px; left: 10px; font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 900; display: none; }
+        /* --- UI Fix for Large Numbers --- */
+        .res-section { 
+            text-align: center; 
+            margin: 15px 0; 
+            padding: 25px 10px; 
+            background: rgba(255, 255, 255, 0.02); 
+            border-radius: 25px; 
+            border: 1px solid rgba(255, 255, 255, 0.03); 
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 180px;
+        }
+        
+        .trade-type-badge { position: absolute; top: 15px; left: 15px; font-size: 0.6rem; padding: 3px 8px; border-radius: 5px; font-weight: 900; }
         .type-long { background: #4ade80; color: #000000; }
         .type-short { background: #FF0000; color: #FFFFFF; }
         
-        .res-val { font-size: 3.2rem; font-weight: 900; color: #4ade80; line-height: 1; margin: 10px 0; }
-        .res-label { color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+        .res-val { 
+            font-size: clamp(1.8rem, 8vw, 3.2rem); 
+            font-weight: 900; 
+            color: #4ade80; 
+            line-height: 1; 
+            margin-top: 15px;
+            word-break: break-all;
+        }
         
-        .liq-box { margin-bottom: 15px; padding: 10px; background: rgba(248, 113, 113, 0.05); border-radius: 12px; border: 1px dashed rgba(248, 113, 113, 0.2); }
-        .liq-price { color: #FF0000; font-weight: 900; font-size: 1.3rem; }
-        .liq-label { font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; }
+        .res-label { color: #94a3b8; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        
+        .liq-box { 
+            padding: 12px; 
+            background: rgba(248, 113, 113, 0.05); 
+            border-radius: 12px; 
+            border: 1px dashed rgba(248, 113, 113, 0.2); 
+            width: 100%;
+        }
+        .liq-price { color: #FF0000; font-weight: 900; font-size: clamp(0.9rem, 4vw, 1.3rem); }
+        .liq-label { font-size: 0.6rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; margin-bottom: 3px; }
 
         .action-row { display: flex; justify-content: center; gap: 15px; margin-top: 5px; }
         .action-btn { width: 42px; height: 42px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ffffff; cursor: pointer; transition: 0.2s; }
@@ -64,21 +92,21 @@
 
     <div class="group" id="cross-balance-group" style="display:none;">
         <label>Total Wallet Balance (USDT)</label>
-        <input type="number" id="v_wallet" placeholder="0.00" oninput="calculate()">
+        <input type="text" id="v_wallet" placeholder="0.00" oninput="handleFormatInput(this)">
     </div>
 
     <div class="grid">
-        <div class="group"><label>Capital</label><input type="number" id="v_cap" placeholder="0" oninput="calculate()"></div>
+        <div class="group"><label>Capital</label><input type="text" id="v_cap" placeholder="0" oninput="handleFormatInput(this)"></div>
         <div class="group">
             <label>Risk %</label><span class="risk-top-label" id="v_risk_top">$0</span>
-            <input type="number" id="v_riskP" placeholder="0" oninput="calculate()">
+            <input type="text" id="v_riskP" placeholder="0" oninput="handleFormatInput(this)">
         </div>
-        <div class="group"><label>Entry Price</label><input type="number" id="v_entry" placeholder="0" oninput="calculate()"></div>
-        <div class="group"><label>Stop Loss</label><input type="number" id="v_sl" placeholder="0" oninput="calculate()"></div>
+        <div class="group"><label>Entry Price</label><input type="text" id="v_entry" placeholder="0" oninput="handleFormatInput(this)"></div>
+        <div class="group"><label>Stop Loss</label><input type="text" id="v_sl" placeholder="0" oninput="handleFormatInput(this)"></div>
     </div>
 
     <div class="res-section">
-        <div id="type-badge" class="trade-type-badge">LONG</div>
+        <div id="type-badge" class="trade-type-badge" style="display:none;">LONG</div>
         <div class="res-val" id="res_size">0</div>
         <p class="res-label">Position Size (Units)</p>
         <div class="liq-box">
@@ -92,15 +120,15 @@
     </div>
 
     <div class="swap-row">
-        <div class="group" style="flex:1"><label id="lbl_left">Trade Amount</label><input type="number" id="in_left" readonly></div>
+        <div class="group" style="flex:1"><label id="lbl_left">Trade Amount</label><input type="text" id="in_left" readonly></div>
         <div class="swap-icon" onclick="swapFields()"><i class="fa-solid fa-repeat"></i></div>
-        <div class="group" style="flex:1"><label id="lbl_right">Leverage</label><input type="number" id="in_right" oninput="calculate()"></div>
+        <div class="group" style="flex:1"><label id="lbl_right">Leverage</label><input type="text" id="in_right" oninput="handleFormatInput(this)"></div>
     </div>
 
     <div class="stats-box">
         <div class="tgt-part">
             <label style="font-size:0.55rem;">TP PRICE</label>
-            <input type="number" id="v_target" style="width:100%; padding:8px; border-radius:8px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; outline:none;" placeholder="0.00" oninput="calculate()">
+            <input type="text" id="v_target" style="width:100%; padding:8px; border-radius:8px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; outline:none;" placeholder="0.00" oninput="handleFormatInput(this)">
         </div>
         <div class="det-part">
             <div class="det-row">Profit <span class="val-green" id="v_profit">0</span></div>
@@ -113,6 +141,29 @@
 <script>
     let marginMode = 'isolated';
 
+    function formatNumberWithCommas(value) {
+        if (!value && value !== 0) return "";
+        let parts = value.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
+    }
+
+    function parseFormattedNumber(value) {
+        if (!value) return 0;
+        return parseFloat(value.toString().replace(/,/g, ''));
+    }
+
+    function handleFormatInput(el) {
+        let cursorPosition = el.selectionStart;
+        let originalLength = el.value.length;
+        let cleanValue = el.value.replace(/[^0-9.]/g, '');
+        el.value = formatNumberWithCommas(cleanValue);
+        let newLength = el.value.length;
+        cursorPosition = cursorPosition + (newLength - originalLength);
+        el.setSelectionRange(cursorPosition, cursorPosition);
+        calculate();
+    }
+
     function setMarginMode(mode) {
         marginMode = mode;
         document.getElementById('btn-isolated').classList.toggle('active', mode === 'isolated');
@@ -123,33 +174,34 @@
     }
 
     function calculate() {
-        const cap = parseFloat(document.getElementById('v_cap').value);
-        const rp = parseFloat(document.getElementById('v_riskP').value);
-        const ent = parseFloat(document.getElementById('v_entry').value);
-        const sl = parseFloat(document.getElementById('v_sl').value);
-        const tgt = parseFloat(document.getElementById('v_target').value);
-        const wallet = parseFloat(document.getElementById('v_wallet').value) || cap;
+        const cap = parseFormattedNumber(document.getElementById('v_cap').value);
+        const rp = parseFormattedNumber(document.getElementById('v_riskP').value);
+        const ent = parseFormattedNumber(document.getElementById('v_entry').value);
+        const sl = parseFormattedNumber(document.getElementById('v_sl').value);
+        const tgt = parseFormattedNumber(document.getElementById('v_target').value);
+        const walletIn = document.getElementById('v_wallet').value;
+        const wallet = walletIn !== "" ? parseFormattedNumber(walletIn) : cap;
         
         const isLevOnLeft = document.getElementById('lbl_left').innerText === "Leverage";
         const levInput = isLevOnLeft ? document.getElementById('in_left') : document.getElementById('in_right');
         const traInput = isLevOnLeft ? document.getElementById('in_right') : document.getElementById('in_left');
-        
-        const lev = parseFloat(levInput.value) || 1;
+        const lev = parseFormattedNumber(levInput.value) || 1;
         const badge = document.getElementById('type-badge');
 
-        if (!isNaN(cap) && !isNaN(rp)) {
+        if (cap && rp) {
             const riskAmt = (cap * rp) / 100;
-            document.getElementById('v_risk_top').innerText = "$" + Math.round(riskAmt).toLocaleString();
-            document.getElementById('v_risk_amt').innerText = "-" + Math.round(riskAmt).toLocaleString();
+            document.getElementById('v_risk_top').innerText = "$" + formatNumberWithCommas(Math.round(riskAmt));
+            document.getElementById('v_risk_amt').innerText = "-" + formatNumberWithCommas(Math.round(riskAmt));
         }
 
-        if (!isNaN(cap) && !isNaN(rp) && !isNaN(ent) && !isNaN(sl) && Math.abs(ent - sl) > 0) {
+        if (cap && rp && ent && sl && Math.abs(ent - sl) > 0) {
             const riskAmt = (cap * rp) / 100;
             const diff = Math.abs(ent - sl);
             const ps = (riskAmt / diff) * ent;
+            const psUnits = ps / ent;
             
-            document.getElementById('res_size').innerText = Math.round(ps).toLocaleString();
-            traInput.value = (ps / lev).toFixed(2);
+            document.getElementById('res_size').innerText = formatNumberWithCommas(Math.round(ps));
+            traInput.value = formatNumberWithCommas((ps / lev).toFixed(2));
 
             const isLong = sl < ent;
             badge.style.display = 'block';
@@ -161,17 +213,15 @@
             if (marginMode === 'isolated') {
                 liq = isLong ? ent * (1 - (1/lev) + mmr) : ent * (1 + (1/lev) - mmr);
             } else {
-                if (isLong) liq = ent - (wallet / (ps/ent)) + (ent * mmr);
-                else liq = ent + (wallet / (ps/ent)) - (ent * mmr);
+                liq = isLong ? ent - (wallet / psUnits) + (ent * mmr) : ent + (wallet / psUnits) - (ent * mmr);
             }
-            document.getElementById('v_liq').innerText = liq > 0 ? liq.toFixed(4) : "0.0000";
+            document.getElementById('v_liq').innerText = liq > 0 ? formatNumberWithCommas(liq.toFixed(4)) : "0.0000";
 
-            if (!isNaN(tgt)) {
+            if (tgt) {
                 const rewardDist = Math.abs(tgt - ent);
-                const ratio = rewardDist / diff;
                 const pf = (ps / ent) * rewardDist;
-                document.getElementById('v_profit').innerText = "+" + Math.round(pf).toLocaleString();
-                document.getElementById('v_rr').innerText = "1:" + ratio.toFixed(2);
+                document.getElementById('v_profit').innerText = "+" + formatNumberWithCommas(Math.round(pf));
+                document.getElementById('v_rr').innerText = "1:" + (rewardDist / diff).toFixed(2);
             }
         } else {
             badge.style.display = 'none';
@@ -195,8 +245,9 @@
 
     function copySize() {
         const val = document.getElementById('res_size').innerText.replace(/,/g, '');
-        if(val === "0") return;
-        navigator.clipboard.writeText(val).then(() => alert("Copied: " + val));
+        if(val && val !== "0") {
+            navigator.clipboard.writeText(val).then(() => alert("Copied: " + val));
+        }
     }
 
     function resetForm() {
