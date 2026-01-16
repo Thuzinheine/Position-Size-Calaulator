@@ -1,66 +1,46 @@
 <!DOCTYPE html>
-<html lang="my">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crypto Position Size Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        :root {
+            --primary-orange: #ff9800;
+            --primary-green: #4caf50;
+            --glass-bg: rgba(30, 30, 40, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f0f2f5;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #e0e0e0;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
             min-height: 100vh;
             margin: 0;
             padding: 15px;
         }
 
-        .calculator-card {
-            background: white;
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 25px;
+            border: 1px solid var(--glass-border);
+            padding: 20px;
             width: 100%;
-            max-width: 375px; /* iPhone size width */
-            border-radius: 35px;
-            padding: 25px 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-            margin: auto;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .header-icon {
-            width: 70px;
-            height: 70px;
-            background: #2D2D3A;
-            border-radius: 15px;
-            margin: 0 auto 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #4CAF50;
-            font-size: 35px;
-        }
-
-        .header h2 {
-            color: #1a5c3a;
-            font-size: 16px;
-            margin: 0;
-            font-weight: 600;
+            max-width: 380px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
         }
 
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 15px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
         .input-group {
@@ -68,272 +48,195 @@
             flex-direction: column;
         }
 
-        .label-row {
-            display: flex;
-            justify-content: space-between;
+        label {
+            font-size: 0.7rem;
+            color: #bbb;
             margin-bottom: 5px;
-            font-size: 13px;
-            color: #888;
-            padding: 0 2px;
         }
 
         input {
-            width: 100%;
-            border: 1.5px solid #eee;
-            border-radius: 12px;
-            padding: 12px;
-            font-size: 17px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 152, 0, 0.2);
+            border-radius: 10px;
+            color: white;
+            padding: 10px;
+            font-size: 1rem;
             outline: none;
-            color: #333;
-            transition: border-color 0.2s;
-            background: #fff;
         }
 
-        input:focus {
-            border-color: #FF6B00;
-        }
-
-        .position-size-display {
+        /* Result Section နှင့် ခလုတ်များ */
+        .result-section {
             text-align: center;
-            margin: 15px 0;
+            margin: 20px 0;
+            position: relative;
         }
 
-        .position-size-display h1 {
-            font-size: 45px;
-            margin: 0;
-            color: #2D2D3A;
-            letter-spacing: -1px;
+        .pos-size {
+            font-size: 2.5rem;
+            color: var(--primary-green);
+            font-weight: 800;
         }
 
-        .position-size-display p {
-            color: #4CAF50;
-            margin: 2px 0;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .margin-leverage {
+        .action-buttons {
             display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            margin-bottom: 20px;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 10px;
         }
 
-        .arrow-icon {
-            font-size: 20px;
-            color: #4CAF50;
-            padding-bottom: 12px;
-        }
-
-        .summary-box {
-            background: #2D2D3A;
-            border-radius: 18px;
-            display: flex;
-            overflow: hidden;
+        .btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
             color: white;
-            min-height: 90px;
+            padding: 10px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 1.1rem;
         }
 
-        .summary-left {
-            flex: 1.2;
+        .btn:active {
+            transform: scale(0.9);
+            background: var(--primary-orange);
+        }
+
+        .stats {
+            background: rgba(0, 0, 0, 0.2);
             padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-right: 1px solid #444;
+            border-radius: 18px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
         }
 
-        .target-input {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid #666;
-            color: white;
-            width: 100%;
-            text-align: center;
-            border-radius: 8px;
-            padding: 8px;
-            font-size: 15px;
-        }
-
-        .summary-right {
-            flex: 1;
-            padding: 12px 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            font-size: 13px;
-        }
-
-        .summary-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 4px;
-        }
-
-        .val-profit { color: #4CAF50; font-weight: bold; }
-        .val-risk { color: #FF5252; font-weight: bold; }
-        .val-rr { color: #FFB300; font-weight: bold; }
+        .profit { color: var(--primary-green); font-weight: bold; }
+        .risk { color: #ff5252; font-weight: bold; }
+        .rr { color: var(--primary-orange); font-weight: bold; }
 
         .footer-nav {
-            background: #FF6B00;
-            margin-top: 20px;
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 152, 0, 0.1);
+            padding: 10px;
             border-radius: 50px;
-            display: flex;
-            justify-content: space-between;
-            padding: 6px;
-            color: white;
-            align-items: center;
         }
 
-        .nav-item { 
-            padding: 8px 12px;
-            cursor: pointer; 
-            font-size: 14px;
-        }
-        
-        .nav-item.active { 
-            background: #1a5c3a; 
-            padding: 8px 18px; 
-            border-radius: 25px; 
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .nav-icon-set {
-            display: flex;
-            gap: 15px;
-            padding-right: 15px;
-        }
+        .nav-btn { color: white; opacity: 0.6; font-size: 0.8rem; }
+        .active { color: var(--primary-orange); opacity: 1; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="calculator-card">
-    <div class="header">
-        <div class="header-icon">🧮</div>
-        <h2>Crypto Position Size Calculator</h2>
+<div class="card">
+    <h3 style="text-align:center; color:var(--primary-green);">Position Sizer</h3>
+    
+    <div class="grid">
+        <div class="input-group">
+            <label>Capital ($)</label>
+            <input type="number" id="capital" value="130" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label>Risk %</label>
+            <input type="number" id="riskPercent" value="100" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label>Entry Price</label>
+            <input type="number" id="entry" value="95283" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label>Stop Loss</label>
+            <input type="number" id="stoploss" value="94400" oninput="calculate()">
+        </div>
+    </div>
+
+    <div class="result-section">
+        <div class="pos-size" id="positionSizeDisplay">0</div>
+        <div style="color: #888; font-size: 0.8rem;">Position Size</div>
+        
+        <div class="action-buttons">
+            <button class="btn" onclick="copyResult()" title="Copy Position Size">
+                <i class="fa-regular fa-copy"></i>
+            </button>
+            <button class="btn" onclick="resetForm()" title="Reset All">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+        </div>
     </div>
 
     <div class="grid">
         <div class="input-group">
-            <div class="label-row"><span>Capital</span></div>
-            <input type="number" id="capital" value="130">
+            <label>Leverage</label>
+            <input type="number" id="leverage" value="45" oninput="calculate()">
         </div>
         <div class="input-group">
-            <div class="label-row"><span>Risk %</span> <span id="risk-usd" style="font-size: 11px;">$130</span></div>
-            <input type="number" id="risk-pct" value="100">
-        </div>
-        <div class="input-group">
-            <div class="label-row"><span>Entry Price</span></div>
-            <input type="number" id="entry" value="95283">
-        </div>
-        <div class="input-group">
-            <div class="label-row"><span>Stop Loss</span></div>
-            <input type="number" id="stop" value="94400">
+            <label>Target Price</label>
+            <input type="number" id="target" value="106200" oninput="calculate()">
         </div>
     </div>
 
-    <div class="position-size-display">
-        <h1 id="pos-size-val">14028</h1>
-        <p>Position Size</p>
-    </div>
-
-    <div class="margin-leverage">
-        <div class="input-group" style="flex: 1;">
-            <div class="label-row"><span>Trade Amount</span></div>
-            <input type="number" id="trade-amount" value="28.0">
-        </div>
-        <div class="arrow-icon">⇆</div>
-        <div class="input-group" style="flex: 1;">
-            <div class="label-row"><span>Leverage</span></div>
-            <input type="number" id="leverage" value="45">
-        </div>
-    </div>
-
-    <div class="summary-box">
-        <div class="summary-left">
-            <input type="number" id="target-price" class="target-input" value="106200">
-        </div>
-        <div class="summary-right">
-            <div class="summary-item">
-                <span>Profit:</span>
-                <span class="val-profit" id="res-profit">≈1607</span>
-            </div>
-            <div class="summary-item">
-                <span>Risk:</span>
-                <span class="val-risk" id="res-risk">130</span>
-            </div>
-            <div class="summary-item">
-                <span>R:R:</span>
-                <span class="val-rr" id="res-rr">1:12.36</span>
-            </div>
+    <div class="stats">
+        <div><small style="color:#888">Profit</small><br><span class="profit" id="profitDisplay">0</span></div>
+        <div><small style="color:#888">Risk</small><br><span class="risk" id="riskDisplay">0</span></div>
+        <div style="grid-column: span 2; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 5px;">
+            <small style="color:#888">R:R Ratio</small> <span class="rr" id="rrDisplay">0</span>
         </div>
     </div>
 
     <div class="footer-nav">
-        <div class="nav-item active">₿ Crypto</div>
-        <div class="nav-icon-set">
-            <div class="nav-item">FX</div>
-            <div class="nav-item">💱</div>
-            <div class="nav-item">⚙️</div>
-        </div>
+        <div class="nav-btn active">CRYPTO</div>
+        <div class="nav-btn">FX</div>
+        <div class="nav-btn"><i class="fa-solid fa-gear"></i></div>
     </div>
 </div>
 
 <script>
-    const ids = ['capital', 'risk-pct', 'entry', 'stop', 'trade-amount', 'leverage', 'target-price'];
+function calculate() {
+    const capital = parseFloat(document.getElementById('capital').value) || 0;
+    const riskPercent = parseFloat(document.getElementById('riskPercent').value) || 0;
+    const entry = parseFloat(document.getElementById('entry').value) || 0;
+    const stoploss = parseFloat(document.getElementById('stoploss').value) || 0;
+    const target = parseFloat(document.getElementById('target').value) || 0;
+
+    const riskAmount = (capital * riskPercent) / 100;
+    const priceDiff = Math.abs(entry - stoploss);
     
-    ids.forEach(id => {
-        document.getElementById(id).addEventListener('input', (e) => calculate(e.target.id));
-    });
-
-    function calculate(changedId) {
-        const capital = parseFloat(document.getElementById('capital').value) || 0;
-        const riskPct = parseFloat(document.getElementById('risk-pct').value) || 0;
-        const entry = parseFloat(document.getElementById('entry').value) || 0;
-        const stop = parseFloat(document.getElementById('stop').value) || 0;
-        const target = parseFloat(document.getElementById('target-price').value) || 0;
+    if (priceDiff > 0) {
+        const units = (riskAmount / priceDiff);
+        const posSizeValue = units * entry;
         
-        let tradeAmount = parseFloat(document.getElementById('trade-amount').value) || 0;
-        let leverage = parseFloat(document.getElementById('leverage').value) || 1;
+        document.getElementById('positionSizeDisplay').innerText = Math.round(posSizeValue).toLocaleString();
+        document.getElementById('riskDisplay').innerText = "$" + riskAmount.toLocaleString();
 
-        // Risk USD
-        const riskUsd = (capital * riskPct) / 100;
-        document.getElementById('risk-usd').innerText = `$${riskUsd.toFixed(0)}`;
-
-        // Position Size
-        const stopLossDist = Math.abs(entry - stop) / entry;
-        let posSize = 0;
-        if (stopLossDist > 0) {
-            posSize = riskUsd / stopLossDist;
+        if (target > 0) {
+            const rewardDiff = Math.abs(target - entry);
+            const profit = units * rewardDiff;
+            const rr = rewardDiff / priceDiff;
+            document.getElementById('profitDisplay').innerText = "≈$" + Math.round(profit).toLocaleString();
+            document.getElementById('rrDisplay').innerText = "1 : " + rr.toFixed(2);
         }
-        document.getElementById('pos-size-val').innerText = Math.round(posSize);
-
-        // Sync Trade Amount & Leverage
-        if (changedId === 'trade-amount') {
-            leverage = posSize / tradeAmount;
-            document.getElementById('leverage').value = isFinite(leverage) ? leverage.toFixed(1) : 0;
-        } else if (changedId === 'leverage') {
-            tradeAmount = posSize / leverage;
-            document.getElementById('trade-amount').value = isFinite(tradeAmount) ? tradeAmount.toFixed(1) : 0;
-        } else {
-            // Re-calc leverage based on current trade amount if other inputs change
-            leverage = posSize / tradeAmount;
-            document.getElementById('leverage').value = isFinite(leverage) ? leverage.toFixed(1) : 0;
-        }
-
-        // Profit & RR
-        const profitDist = Math.abs(target - entry) / entry;
-        const profit = posSize * profitDist;
-        const rr = (target - entry) / (entry - stop);
-
-        document.getElementById('res-profit').innerText = `≈${Math.round(profit)}`;
-        document.getElementById('res-risk').innerText = Math.round(riskUsd);
-        document.getElementById('res-rr').innerText = `1:${Math.abs(rr).toFixed(2)}`;
     }
+}
 
-    calculate();
+// Copy လုပ်ဆောင်ချက်
+function copyResult() {
+    const text = document.getElementById('positionSizeDisplay').innerText.replace(/,/g, '');
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Position Size copied: " + text);
+    });
+}
+
+// Reset လုပ်ဆောင်ချက်
+function resetForm() {
+    document.querySelectorAll('input').forEach(input => input.value = '');
+    document.getElementById('positionSizeDisplay').innerText = '0';
+    document.getElementById('profitDisplay').innerText = '0';
+    document.getElementById('riskDisplay').innerText = '0';
+    document.getElementById('rrDisplay').innerText = '0';
+}
+
+calculate();
 </script>
 
 </body>
